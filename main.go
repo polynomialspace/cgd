@@ -15,7 +15,6 @@ import (
 var cmd = flag.String("c", "", "CGI program to run")
 var pwd = flag.String("w", "", "Working dir for CGI")
 var serveFcgi = flag.Bool("f", false, "Run as a FCGI 'server' instead of HTTP")
-var debug = flag.Bool("debug", false, "Print debug msgs to stderr")
 var address = flag.String("a", ":42069", "Listen address")
 var envVars = flag.String("e", "", "Comma-separated list of environment variables to preserve")
 
