@@ -34,7 +34,10 @@ func main() {
 		Path: *cmd,
 		Root: "/",
 		Dir: *pwd,
-		InheritEnv: []string{"PATH", "PLAN9"},
+		InheritEnv: append(
+			[]string{"PATH", "PLAN9"},
+			strings.Split(*envVars, ",")...
+		),
 	}
 
 	// This is a hack to make p9p's rc happier for some unknown reason.
@@ -43,10 +46,6 @@ func main() {
 	}
 
 	os.Setenv("PATH", os.Getenv("PATH")+":.")
-
-	for _, envVar := range strings.Split(*envVars, ",") {
-		h.InheritEnv = append(h.InheritEnv, envVar)
-	}
 
 	var err error
 	if *serveFcgi {
