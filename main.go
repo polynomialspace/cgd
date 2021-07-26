@@ -12,11 +12,11 @@ import (
 	"net/http/fcgi"
 )
 
-var cmd = flag.String("c", "", "CGI program to run")
-var pwd = flag.String("w", "", "Working dir for CGI")
-var serveFcgi = flag.Bool("f", false, "Run as a FCGI 'server' instead of HTTP")
-var address = flag.String("a", ":42069", "Listen address")
-var envVars = flag.String("e", "", "Comma-separated list of environment variables to preserve")
+var cmd = flag.String("c", "", "CGI `prog`ram to run")
+var pwd = flag.String("w", "", "Working `dir` for CGI")
+var serveFcgi = flag.Bool("f", false, "Serve FastCGI instead of HTTP")
+var address = flag.String("a", ":3333", "Listen on `addr`ess")
+var envVars = flag.String("e", "", "Comma-separated list of `env`ironment variables passed through to prog")
 
 func main() {
 	flag.Usage = func () {
