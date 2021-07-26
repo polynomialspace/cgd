@@ -19,11 +19,15 @@ var address = flag.String("a", ":42069", "Listen address")
 var envVars = flag.String("e", "", "Comma-separated list of environment variables to preserve")
 
 func main() {
-	flag.Usage = usage
+	flag.Usage = func () {
+		os.Stderr.WriteString("usage: cgd [-f] -c prog [-w wdir] [-a addr] [-e VAR1,VAR2]\n")
+		flag.PrintDefaults()
+	}
 	flag.Parse()
 
 	if *cmd == "" {
-		usage()
+		flag.Usage()
+		os.Exit(2)
 	}
 
 	// This is a hack to make p9p's rc happier for some unknown reason.
@@ -63,8 +67,3 @@ func main() {
 	}
 }
 
-func usage() {
-	os.Stderr.WriteString("usage: cgd [-f] -c prog [-w wdir] [-a addr] [-e VAR1,VAR2]\n")
-	flag.PrintDefaults()
-	os.Exit(2)
-}
