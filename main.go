@@ -30,24 +30,22 @@ func main() {
 		os.Exit(2)
 	}
 
+	h := &cgi.Handler{
+		Path: *cmd,
+		Root: "/",
+		Dir: *pwd,
+		InheritEnv: []string{"PATH", "PLAN9"},
+	}
+
 	// This is a hack to make p9p's rc happier for some unknown reason.
-	c := *cmd
-	if c[0] != '/' {
-		c = "./" + c
+	if h.Path[0] != '/' && strings.Split(h.Path, "/")[0][0] != '.' {
+		h.Path = "./" + h.Path
 	}
 
 	os.Setenv("PATH", os.Getenv("PATH")+":.")
 
-	envList := []string{"PATH", "PLAN9"}
 	for _, envVar := range strings.Split(*envVars, ",") {
-		envList = append(envList, envVar)
-	}
-
-	h := &cgi.Handler{
-		Path:       c,
-		Root:       "/",
-		Dir:        *pwd,
-		InheritEnv: envList,
+		h.InheritEnv = append(h.InheritEnv, envVar)
 	}
 
 	var err error
