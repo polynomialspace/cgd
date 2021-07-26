@@ -12,7 +12,7 @@ import (
 	"net/http/fcgi"
 )
 
-var cmd = flag.String("c", "", "CGI `prog`ram to run")
+var cmd = flag.String("c", "", "CGI `prog`ram to run; relative paths are relative to -w dir")
 var pwd = flag.String("w", "", "Working `dir` for CGI")
 var serveFcgi = flag.Bool("f", false, "Serve FastCGI instead of HTTP")
 var address = flag.String("a", ":3333", "Listen on `addr`ess")
@@ -45,22 +45,18 @@ func main() {
 		h.Path = "./" + h.Path
 	}
 
-	os.Setenv("PATH", os.Getenv("PATH")+":.")
-
 	var err error
-	if *serveFcgi {
-		if l, err := net.Listen("tcp", *address); err == nil {
-			log.Println("Starting FastCGI daemon listening on", *address)
-			err = fcgi.Serve(l, h)
+	if l, err := net.Listen("tcp", *address); err == nil {
+		serve, msg := http.Serve, "HTTP server"
+		if *serveFcgi {
+			serve, msg = fcgi.Serve, "FastCGI daemon"
 		}
-
-	} else {
-		log.Println("Starting HTTP server listening on", *address)
-		err = http.ListenAndServe(*address, h)
+		log.Println("Starting", msg, "listening on", *address)
+		os.Setenv("PATH", os.Getenv("PATH")+":.")
+		err = serve(l, h)
 	}
 
-	if err != nil {
-		log.Fatal(err)
-	}
+	// err is never nil if we get this far
+	log.Fatal(err)
 }
 
