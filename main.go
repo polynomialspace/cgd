@@ -44,19 +44,19 @@ func main() {
 	if h.Path[0] != '/' && strings.Split(h.Path, "/")[0][0] != '.' {
 		h.Path = "./" + h.Path
 	}
-
-	var err error
-	if l, err := net.Listen("tcp", *address); err == nil {
-		serve, msg := http.Serve, "HTTP server"
-		if *serveFcgi {
-			serve, msg = fcgi.Serve, "FastCGI daemon"
-		}
-		log.Println("Starting", msg, "listening on", *address)
-		os.Setenv("PATH", os.Getenv("PATH")+":.")
-		err = serve(l, h)
+	
+	serve, msg := http.Serve, "HTTP server"
+	if *serveFcgi {
+		serve, msg = fcgi.Serve, "FastCGI daemon"
 	}
 
-	// err is never nil if we get this far
-	log.Fatal(err)
+	l, err := net.Listen("tcp", *address)
+	if err == nil {
+		log.Fatal(err)
+	}
+		
+	log.Println("Starting", msg, "listening on", *address)
+	os.Setenv("PATH", os.Getenv("PATH")+":.")
+	log.Fatal(serve(l, h))
 }
 
