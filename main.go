@@ -51,7 +51,7 @@ func main() {
 	}
 
 	l, err := net.Listen("tcp", *address)
-	if err == nil {
+	if err != nil {
 		log.Fatal(err)
 	}
 		
