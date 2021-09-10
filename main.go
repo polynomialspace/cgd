@@ -4,6 +4,7 @@ import (
 	"flag"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"net"
@@ -30,8 +31,13 @@ func main() {
 		os.Exit(2)
 	}
 
+	c, err := filepath.Abs(*cmd)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	h := &cgi.Handler{
-		Path: *cmd,
+		Path: c,
 		Root: "/",
 		Dir:  *pwd,
 		InheritEnv: append(
@@ -40,12 +46,7 @@ func main() {
 		),
 	}
 
-	// This is a hack to make p9p's rc happier for some unknown reason.
-	if h.Path[0] != '/' && strings.Split(h.Path, "/")[0][0] != '.' {
-		h.Path = "./" + h.Path
-	}
-
-	err := os.Setenv("PATH", os.Getenv("PATH")+":.")
+	err = os.Setenv("PATH", os.Getenv("PATH")+":.")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -63,4 +64,3 @@ func main() {
 	log.Println("Starting", msg, "listening on", *address)
 	log.Fatal(serve(l, h))
 }
-
