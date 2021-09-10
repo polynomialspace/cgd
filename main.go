@@ -19,7 +19,7 @@ var address = flag.String("a", ":3333", "Listen on `addr`ess")
 var envVars = flag.String("e", "", "Comma-separated list of `env`ironment variables passed through to prog")
 
 func main() {
-	flag.Usage = func () {
+	flag.Usage = func() {
 		os.Stderr.WriteString("usage: cgd [-f] -c prog [-w wdir] [-a addr] [-e VAR1,VAR2]\n")
 		flag.PrintDefaults()
 	}
@@ -33,10 +33,10 @@ func main() {
 	h := &cgi.Handler{
 		Path: *cmd,
 		Root: "/",
-		Dir: *pwd,
+		Dir:  *pwd,
 		InheritEnv: append(
 			[]string{"PATH", "PLAN9"},
-			strings.Split(*envVars, ",")...
+			strings.Split(*envVars, ",")...,
 		),
 	}
 
@@ -44,22 +44,23 @@ func main() {
 	if h.Path[0] != '/' && strings.Split(h.Path, "/")[0][0] != '.' {
 		h.Path = "./" + h.Path
 	}
-	
+
 	err := os.Setenv("PATH", os.Getenv("PATH")+":.")
 	if err != nil {
 		log.Fatal(err)
 	}
-	
+
 	l, err := net.Listen("tcp", *address)
 	if err != nil {
 		log.Fatal(err)
 	}
-	
+
 	serve, msg := http.Serve, "HTTP server"
 	if *serveFcgi {
 		serve, msg = fcgi.Serve, "FastCGI daemon"
 	}
-		
+
 	log.Println("Starting", msg, "listening on", *address)
 	log.Fatal(serve(l, h))
 }
+
