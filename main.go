@@ -36,9 +36,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = os.Setenv("PATH", os.Getenv("PATH")+":.")
-	if err != nil {
-		log.Fatal(err)
+	// cgi already sets a default $PATH if empty
+	// don't clobber that 'feature' here
+	if env := os.Getenv("PATH"); env != "" {
+		err = os.Setenv("PATH", env+":.")
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	h := &cgi.Handler{
