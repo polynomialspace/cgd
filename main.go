@@ -36,6 +36,11 @@ func main() {
 		log.Fatal(err)
 	}
 
+	err = os.Setenv("PATH", os.Getenv("PATH")+":.")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	h := &cgi.Handler{
 		Path: c,
 		Root: "/",
@@ -44,11 +49,6 @@ func main() {
 			[]string{"PATH", "PLAN9"},
 			strings.Split(*envVars, ",")...,
 		),
-	}
-
-	err = os.Setenv("PATH", os.Getenv("PATH")+":.")
-	if err != nil {
-		log.Fatal(err)
 	}
 
 	l, err := net.Listen("tcp", *address)
