@@ -45,11 +45,6 @@ func main() {
 		h.Path = "./" + h.Path
 	}
 	
-	serve, msg := http.Serve, "HTTP server"
-	if *serveFcgi {
-		serve, msg = fcgi.Serve, "FastCGI daemon"
-	}
-	
 	err := os.Setenv("PATH", os.Getenv("PATH")+":.")
 	if err != nil {
 		log.Fatal(err)
@@ -58,6 +53,11 @@ func main() {
 	l, err := net.Listen("tcp", *address)
 	if err != nil {
 		log.Fatal(err)
+	}
+	
+	serve, msg := http.Serve, "HTTP server"
+	if *serveFcgi {
+		serve, msg = fcgi.Serve, "FastCGI daemon"
 	}
 		
 	log.Println("Starting", msg, "listening on", *address)
