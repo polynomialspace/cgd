@@ -49,14 +49,17 @@ func main() {
 	if *serveFcgi {
 		serve, msg = fcgi.Serve, "FastCGI daemon"
 	}
-
+	
+	err := os.Setenv("PATH", os.Getenv("PATH")+":.")
+	if err != nil {
+		log.Fatal(err)
+	}
+	
 	l, err := net.Listen("tcp", *address)
 	if err != nil {
 		log.Fatal(err)
 	}
 		
 	log.Println("Starting", msg, "listening on", *address)
-	os.Setenv("PATH", os.Getenv("PATH")+":.")
 	log.Fatal(serve(l, h))
 }
-
